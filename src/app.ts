@@ -2,7 +2,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 import { AppDataSource } from './data-source'
 import { userRouter } from './routes/user.route'
-import { errorHandler } from './middlewares/error.middleware'
+import bodyParser from 'body-parser'
 
 dotenv.config()
 
@@ -10,6 +10,8 @@ AppDataSource.initialize().then(() => {
     const app = express()
 
     app.use(express.json())
+    app.use(bodyParser.json())
+
     const port = 3000
 
     app.use("/users", userRouter); 

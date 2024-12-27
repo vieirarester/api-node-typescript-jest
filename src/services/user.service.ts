@@ -1,12 +1,17 @@
 import { CreateUserDTO } from "../dtos/create-user.dto";
+import { LoginUserDTO } from "../dtos/login-user.dto";
 import { CryptoProvider } from "../factories/crypto.factory";
 import { UserRepositoryProvider } from "../factories/user.repository.factory";
 import { ValidationError } from "../middlewares/validation.middleware";
 
 export class UserService {
+    static async login(data: LoginUserDTO) {
+        const cryptoUtil = CryptoProvider.create()
+        
+    }
     static userRepository = UserRepositoryProvider.create()
 
-    static createUser(data: CreateUserDTO) {
+    static async createUser(data: CreateUserDTO) {
         const cryptoUtil = CryptoProvider.create()
         const { userDocument, creditCardToken } = data
 

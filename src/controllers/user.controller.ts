@@ -28,13 +28,13 @@ export class UserController {
         try {
             const data: CreateUserDTO = req.body
             await UserService.createUser(data)
-            res.status(201).json({ message: "User created successfully" });
-        } catch (error) {
-            if (error instanceof ValidationError) {
-                res.status(400).json({ message: error.message });
+            res.status(201).json({ message: "User created successfully" })
+        } catch (err) {
+            if (err instanceof ValidationError) {
+                res.status(400).json({ message: err.message })
                 return
             }
-            next(error)
+            next(err)
         }
     }
 

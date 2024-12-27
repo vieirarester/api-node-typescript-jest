@@ -21,8 +21,8 @@ export class UserService {
 
         const encryptedData: CreateUserDTO = {
             ...data,
-            userDocument: cryptoUtil.encrypt(userDocument),
-            creditCardToken: cryptoUtil.encrypt(creditCardToken),
+            userDocument: cryptoUtil.hash(userDocument),
+            creditCardToken: cryptoUtil.hash(creditCardToken),
         }
         return this.userRepository.createUser(encryptedData)
     }

@@ -1,22 +1,37 @@
 import { CreateUserDTO } from "../dtos/create-user.dto";
 import { LoginUserDTO } from "../dtos/login-user.dto";
+import { User } from "../entity/User";
 import { CryptoProvider } from "../factories/crypto.factory";
 import { UserRepositoryProvider } from "../factories/user.repository.factory";
-import { ValidationError } from "../middlewares/validation.middleware";
+import { NotFoundException } from "../middlewares/not-found.middleware";
+import { ValidationException } from "../middlewares/validation.middleware";
 
 export class UserService {
-    static async login(data: LoginUserDTO) {
-        const cryptoUtil = CryptoProvider.create()
-        
-    }
     static userRepository = UserRepositoryProvider.create()
+
+    static async login(data: LoginUserDTO): Promise<User | null> {
+        const cryptoUtil = CryptoProvider.create()
+
+        if (!(data.userDocument.length == 11)) {
+            throw new ValidationException('The field must have 11 characters')
+        }
+
+        const encryptedUserDocument = cryptoUtil.hash(data.userDocument)
+
+        const user = await this.userRepository.login(encryptedUserDocument)
+        if (!user) {
+            throw new NotFoundException('Field is incorrect')
+        }
+
+        return user
+    }
 
     static async createUser(data: CreateUserDTO) {
         const cryptoUtil = CryptoProvider.create()
         const { userDocument, creditCardToken } = data
 
         if (!(userDocument.length == 11) && !(creditCardToken.length == 11)) {
-            throw new ValidationError('The field must have 11 characters')
+            throw new ValidationException('The field must have 11 characters')
         }
 
         const encryptedData: CreateUserDTO = {

@@ -11,6 +11,4 @@ export class CryptoUtil {
         return crypto.createHmac("sha256", this.saltKey).update(field).digest("hex");
     }
 
-    public 
-
 }

@@ -7,17 +7,15 @@ import bodyParser from 'body-parser'
 dotenv.config()
 
 AppDataSource.initialize().then(() => {
+    const port = 3000
     const app = express()
 
     app.use(express.json())
     app.use(bodyParser.json())
-
-    const port = 3000
 
     app.use("/users", userRouter); 
  
     app.listen(port, () => {
         console.log(`Server is running on PORT ${port}`)
     })
-
 })

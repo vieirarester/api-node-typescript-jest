@@ -14,7 +14,7 @@ Router.get(
 )
 
 Router.delete(
-    "/delete", 
+    "/delete/:id", 
     authenticate, 
     UserController.delete
 )

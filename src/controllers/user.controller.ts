@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { UserService } from "../services/user.service";
 import { CreateUserDTO } from "../dtos/create-user.dto";
-import { ValidationException } from "../middlewares/validation.middleware";
+import { ValidationException } from "../errors/validation.middleware";
 import { LoginUserDTO } from "../dtos/login-user.dto";
-import { NotFoundException } from "../middlewares/not-found.middleware";
+import { NotFoundException } from "../errors/not-found.middleware";
 
 export class UserController {
     static async getUsers(req: Request, res: Response, next: NextFunction) {
@@ -18,8 +18,8 @@ export class UserController {
     static async login(req: Request, res: Response, next: NextFunction) {
         try {
             const data: LoginUserDTO = req.body
-            await UserService.login(data)
-            res.status(201).json({message: "User is logging"})
+            const token = await UserService.login(data)
+            res.status(200).json({ message: "User logged in successfully", token })
         } catch (error) {
             if (error instanceof NotFoundException) {
                 res.status(400).json({ message: error.message })

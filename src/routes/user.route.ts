@@ -19,4 +19,10 @@ Router.delete(
     UserController.delete
 )
 
+Router.put(
+    "/update/:id",
+    authenticate,
+    UserController.update
+)
+
 export { Router as userRouter }

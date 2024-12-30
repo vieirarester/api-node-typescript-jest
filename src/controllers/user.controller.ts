@@ -4,6 +4,7 @@ import { CreateUserDTO } from "../dtos/create-user.dto";
 import { ValidationException } from "../errors/validation.middleware";
 import { LoginUserDTO } from "../dtos/login-user.dto";
 import { NotFoundException } from "../errors/not-found.middleware";
+import { UpdateUserDTO } from "../dtos/update-user.dto";
 
 export class UserController {
     static async getUsers(req: Request, res: Response, next: NextFunction) {
@@ -48,6 +49,25 @@ export class UserController {
             const id = req.query.id as string
             await UserService.deleteUser(id)
             res.status(204).send();
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                res.status(400).json({ message: error.message })
+                return
+            }
+            if (error instanceof ValidationException) {
+                res.status(400).json({ message: error.message })
+                return
+            }
+            next(error)
+        }
+    }
+
+    static async update(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = req.params.id
+            const data: UpdateUserDTO  = req.body
+            await UserService.update(data,id)
+            res.status(201).json({ message: "User updated successfully" })
         } catch (error) {
             if (error instanceof NotFoundException) {
                 res.status(400).json({ message: error.message })

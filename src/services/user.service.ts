@@ -6,6 +6,7 @@ import { CryptoProvider } from "../factories/crypto.factory";
 import { UserRepositoryProvider } from "../factories/user.repository.factory";
 import { NotFoundException } from "../errors/not-found.middleware";
 import { ValidationException } from "../errors/validation.middleware";
+import { UpdateUserDTO } from "../dtos/update-user.dto";
 
 export class UserService {
     static userRepository = UserRepositoryProvider.create()
@@ -64,5 +65,36 @@ export class UserService {
         }
 
         return 
+    }
+
+    static async update(data: UpdateUserDTO, id: string) {
+        if (!id || id.trim() === '') {
+            throw new ValidationException('Invalid ID provided')
+        }
+        
+        if (!(data.userDocument.length == 11) || !(data.creditCardToken.length == 11)) {
+            throw new ValidationException('The field must have 11 characters')
+        }
+
+        const user = await this.userRepository.exist(parseInt(id))
+
+        if (!user) {
+            throw new NotFoundException('User did not found')
+        }
+
+        const cryptoUtil = CryptoProvider.create()
+
+        const encryptedData: UpdateUserDTO = {
+            userDocument: cryptoUtil.hash(data.userDocument),
+            creditCardToken: cryptoUtil.hash(data.creditCardToken),
+            value: data.value
+        }
+
+        return this.userRepository.update(encryptedData, parseInt(id))
+    }
+
+    static async exist(id: number) {
+        const user = await this.userRepository.exist(id)
+        return user
     }
 }

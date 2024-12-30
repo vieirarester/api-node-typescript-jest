@@ -53,6 +53,10 @@ export class UserController {
                 res.status(400).json({ message: error.message })
                 return
             }
+            if (error instanceof ValidationException) {
+                res.status(400).json({ message: error.message })
+                return
+            }
             next(error)
         }
     }

@@ -46,4 +46,17 @@ export class UserService {
         const users = await this.userRepository.getUsers();
         return users
     }
+
+    static async deleteUser(id: string | undefined){
+        if (!id || id.trim() === '') {
+            throw new ValidationException('Invalid ID provided')
+        }
+
+        const user = await this.userRepository.deleteUser(id)
+        if (!user) {
+            throw new NotFoundException('User did not found')
+        }
+
+        return 
+    }
 }

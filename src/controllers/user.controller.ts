@@ -43,4 +43,18 @@ export class UserController {
         }
     }
 
+    static async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id = req.query.id as string
+            await UserService.deleteUser(id)
+            res.status(204).send();
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                res.status(400).json({ message: error.message })
+                return
+            }
+            next(error)
+        }
+    }
+
 }

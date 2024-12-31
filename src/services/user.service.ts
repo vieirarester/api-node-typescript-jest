@@ -1,7 +1,6 @@
 import { CreateUserDTO } from "../dtos/create-user.dto";
 import { LoginUserDTO } from "../dtos/login-user.dto";
 import { PayloadTokenUserDTO } from "../dtos/payload-token-user.dto";
-import { User } from "../entity/User";
 import { CryptoProvider } from "../factories/crypto.factory";
 import { UserRepositoryProvider } from "../factories/user.repository.factory";
 import { NotFoundException } from "../errors/not-found.middleware";

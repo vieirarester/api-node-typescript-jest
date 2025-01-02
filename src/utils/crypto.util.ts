@@ -1,7 +1,9 @@
 import * as crypto from "crypto"
 import jwt from "jsonwebtoken"
-import { PayloadTokenUserDTO } from "../dtos/payload-token-user.dto"
-
+interface ContentPayload {
+    id: number
+    userDocument: string
+}
 export class CryptoUtil {
     private saltKey: crypto.BinaryLike | crypto.KeyObject
     private secretKey: string
@@ -15,7 +17,7 @@ export class CryptoUtil {
         return crypto.createHmac("sha256", this.saltKey).update(field).digest("hex");
     }
 
-    generateToken(payload: PayloadTokenUserDTO) {
+    generateToken(payload: ContentPayload) {
         return jwt.sign(payload, this.secretKey, { 
             expiresIn: '1h',
             algorithm: 'HS256',      

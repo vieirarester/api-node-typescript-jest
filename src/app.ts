@@ -1,8 +1,9 @@
-import express from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import dotenv from 'dotenv'
 import { AppDataSource } from './data-source'
 import { userRouter } from './routes/user.route'
 import bodyParser from 'body-parser'
+import { errorHandler } from './middlewares/error.middleware'
 
 dotenv.config()
 
@@ -13,7 +14,9 @@ AppDataSource.initialize().then(() => {
     app.use(express.json())
     app.use(bodyParser.json())
 
-    app.use("/users", userRouter); 
+    app.use("/users", userRouter);
+    
+    app.use(errorHandler as (err: any, req: Request, res: Response, next: NextFunction) => void)
  
     app.listen(port, () => {
         console.log(`Server is running on PORT ${port}`)

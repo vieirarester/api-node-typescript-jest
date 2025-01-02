@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { ValidationException } from '../errors/validation-error';
-import { NotFoundException } from '../errors/not-found-error';
+import { ValidationException } from '../../domain/errors/validation-error';
+import { NotFoundException } from '../../domain/errors/not-found-error';
 
 export function errorHandler(err: any, req: Request, res: Response, next: NextFunction): Response | void {
     if (err instanceof ValidationException) {

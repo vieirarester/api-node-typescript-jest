@@ -2,10 +2,10 @@ import { CreateUserDTO } from "../dtos/create-user.dto";
 import { LoginUserDTO } from "../dtos/login-user.dto";
 import { CryptoProvider } from "../factories/crypto.factory";
 import { UserRepositoryProvider } from "../factories/user.repository.factory";
-import { NotFoundException } from "../errors/not-found-error";
-import { ValidationException } from "../errors/validation-error";
+import { NotFoundException } from "../../domain/errors/not-found-error";
+import { ValidationException } from "../../domain/errors/validation-error";
 import { UpdateUserDTO } from "../dtos/update-user.dto";
-import { User } from "../entity/User";
+import { User } from "../../domain/entity/User";
 
 export class UserService {
     static cryptoUtil = CryptoProvider.create()

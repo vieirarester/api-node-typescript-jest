@@ -1,9 +1,9 @@
 import express, { NextFunction, Request, Response } from 'express'
 import dotenv from 'dotenv'
 import { AppDataSource } from './data-source'
-import { userRouter } from './routes/user.route'
+import { userRouter } from './application/routes/user.route'
 import bodyParser from 'body-parser'
-import { errorHandler } from './middlewares/error.middleware'
+import { errorHandler } from './application/middlewares/error.middleware'
 
 dotenv.config()
 

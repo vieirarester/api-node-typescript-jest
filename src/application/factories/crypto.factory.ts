@@ -1,4 +1,4 @@
-import { CryptoUtil } from "../utils/crypto.util";
+import { CryptoUtil } from "../../infrastructure/utils/crypto.util";
 
 export class CryptoProvider {
     static create(): CryptoUtil {

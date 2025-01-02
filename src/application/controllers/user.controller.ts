@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { UserService } from "../services/user.service";
 import { CreateUserDTO } from "../dtos/create-user.dto";
-import { ValidationException } from "../errors/validation-error";
+import { ValidationException } from "../../domain/errors/validation-error";
 import { LoginUserDTO } from "../dtos/login-user.dto";
-import { NotFoundException } from "../errors/not-found-error";
+import { NotFoundException } from "../../domain/errors/not-found-error";
 import { UpdateUserDTO } from "../dtos/update-user.dto";
 
 export class UserController {

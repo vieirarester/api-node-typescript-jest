@@ -1,4 +1,4 @@
-import { TypeOrmUserRepository } from "../repository/user.repository";
+import { TypeOrmUserRepository } from "../../domain/repository/user.repository";
 
 export class UserRepositoryProvider {
     static create(): TypeOrmUserRepository {

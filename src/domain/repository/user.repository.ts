@@ -1,7 +1,7 @@
 import { Repository } from "typeorm";
 import { User } from "../entity/User";
 import { UserRepository } from "../implements/user.implement";
-import { AppDataSource } from "../../data-source";
+import { AppDataSource } from "../../infrastructure/database/data-source";
 
 export class TypeOrmUserRepository implements UserRepository {
 

@@ -3,44 +3,38 @@
 // METHOD EXPECT -> asserções do resultado, validar resultados
 
 import { Long } from "mongodb";
-import { DataSource } from 'typeorm';
 import { UserService } from "../../application/services/user.service"
 import { NotFoundException } from "../../domain/errors/not-found-error"
-import { User } from '../../domain/entity/User';
 import { ValidationException } from "../../domain/errors/validation-error";
+import { mockUserRepository } from "../mocks/user-repository.mock";
+import { mockCryptoUtil } from "../mocks/crypto-provider.mock";
+
+jest.mock("../../application/factories/user.repository.factory", () => ({
+    UserRepositoryProvider: {
+        create: jest.fn(() => mockUserRepository)
+    }
+}))
+
+jest.mock("../../application/factories/crypto.factory", () => ({
+    CryptoProvider: {
+        create: jest.fn(() => mockCryptoUtil)
+    }
+}))
 
 describe("User Service", () => {
-    let testDataSource: DataSource
+    beforeEach(() => {
+        jest.clearAllMocks()
 
-    beforeAll(async () => {
-        testDataSource = new DataSource({
-          type: 'sqlite',
-          database: ':memory:',
-          dropSchema: true,
-          entities: [User],
-          synchronize: true,
-          logging: false,
-        });
-      
-        await testDataSource.initialize()
-      });
-
-    afterAll(async () => {
-        if (testDataSource.isInitialized) {
-            await testDataSource.destroy()
-        }
-    });
-
-    afterEach(async () => {
-        if (testDataSource.isInitialized) {
-            const entities = testDataSource.entityMetadatas
-            for (const entity of entities) {
-                const repository = testDataSource.getRepository(entity.name)
-                await repository.clear()
+        mockUserRepository.login.mockImplementation((encryptedUserDocument: string) => {
+            if (encryptedUserDocument === 'hashed-12345678910') {
+                return {
+                    id: "1",
+                    userDocument: "hashed-12345678910"
+                }
             }
-        }
-    });
-
+        })
+    })
+    
     describe("Sign Up", () => {
 
         test("should throw if the field not have 11 letters", async () => {
@@ -51,6 +45,21 @@ describe("User Service", () => {
                     value: Long.fromNumber(1100) 
                 })
             ).rejects.toThrow(ValidationException)
+        })
+
+        test("should call repository createUser with hashed data", async () => {
+            await UserService.createUser({
+                userDocument: "12345678910",
+                creditCardToken: "validtoken1",
+                value: Long.fromNumber(1000)
+            })
+
+            expect(mockCryptoUtil.hash).toHaveBeenCalledTimes(2)
+            expect(mockUserRepository.createUser).toHaveBeenCalledWith({
+                userDocument: "hashed-12345678910",
+                creditCardToken: "hashed-validtoken1",
+                value: Long.fromNumber(1000),
+            })
         })
     })
 
@@ -63,7 +72,8 @@ describe("User Service", () => {
         
         test("User logged", async () => {
             const user = await UserService.login({ userDocument: "12345678910" })
-            expect(user).toHaveProperty('token')
+            expect(user).toEqual("mocked_token")
         })
     })
+
 })

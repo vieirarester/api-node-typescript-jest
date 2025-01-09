@@ -8,11 +8,9 @@ import { UpdateUserDTO } from "../dtos/update-user.dto";
 import { User } from "../../domain/entity/User";
 
 export class UserService {
-    static cryptoUtil = CryptoProvider.create()
-    static userRepository = UserRepositoryProvider.create()
-
+    
     static async login(data: LoginUserDTO): Promise<string> {
-        const { cryptoUtil } = this
+        const cryptoUtil = this.cryptoUtil
 
         this.isValidField(data.userDocument)
 
@@ -97,5 +95,13 @@ export class UserService {
             throw new ValidationException('The field must have 11 characters')
         }
         return true
+    }
+
+    private static get cryptoUtil() {
+        return CryptoProvider.create()
+    }
+
+    private static get userRepository() {
+        return UserRepositoryProvider.create()
     }
 }

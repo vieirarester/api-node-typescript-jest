@@ -10,6 +10,7 @@ import { mockUserRepository } from "../mocks/user-repository.mock";
 import { mockCryptoUtil } from "../mocks/crypto-provider.mock";
 import { userListMock } from "../mocks/user-list.mock";
 import { User } from "../../domain/entity/User";
+import { UpdateUserDTO } from "../../application/dtos/update-user.dto";
 
 jest.mock("../../application/factories/user.repository.factory", () => ({
     UserRepositoryProvider: {
@@ -43,6 +44,16 @@ describe("User Service", () => {
             }
             userListMock.splice(index, 1)
         });
+
+        mockUserRepository.update.mockImplementation((data: UpdateUserDTO, id: number) => {
+            userListMock.forEach(u => {
+                if (u.id === id) {
+                    u.userDocument = data.userDocument
+                    u.creditCardToken = data.creditCardToken
+                    u.value = data.value
+                }
+            })
+        })
         
     })
     
@@ -110,5 +121,67 @@ describe("User Service", () => {
             await expect(UserService.deleteUser("1")).resolves.toBeUndefined()
             expect(mockUserRepository.deleteUser).toHaveBeenCalledWith(userFounded)
         })
+    })
+
+    describe("Update", () => {
+        test("should throw ValidationException if ID is invalid", async () => {
+            await expect(UserService.update({
+                userDocument: "12345678910",
+                creditCardToken: "validtoken1",
+                value: Long.fromNumber(1000)
+            }, " ")).rejects.toThrow(ValidationException)
+        })
+
+        test("should throw if the userDocument not have 11 letters", async () => {
+            await expect(
+                UserService.update({ 
+                    userDocument: "1234567891", 
+                    creditCardToken: "25iaaR8hjGl",
+                    value: Long.fromNumber(1100) 
+                }, "1")
+            ).rejects.toThrow(ValidationException)
+        })
+
+        test("should throw if the creditCardToken not have 11 letters", async () => {
+            await expect(
+                UserService.update({ 
+                    userDocument: "12345678910", 
+                    creditCardToken: "25iaaR8hjG",
+                    value: Long.fromNumber(1800) 
+                }, "1")
+            ).rejects.toThrow(ValidationException)
+        })
+        
+        test("should throw NotFoundException if user does not exist", async () => {
+            jest.spyOn(UserService, "exist").mockResolvedValue(null);
+            await expect(UserService.update({ 
+                    userDocument: "12345678910", 
+                    creditCardToken: "25iaaR8hjGi",
+                    value: Long.fromNumber(1800) 
+                },"123")).rejects.toThrow(NotFoundException)
+        })
+
+        test("should user updated successfully",async () => {
+            const userFounded = {
+                id: 1,
+                userDocument: "hashed-12345678910",
+                creditCardToken: "hash-crediktokenupdate",
+                value: Long.fromNumber(1000)
+            }
+            mockUserRepository.exist.mockResolvedValue(userFounded)
+            await expect(UserService.update({
+                userDocument: "12345678910",
+                creditCardToken: "creditokenU",
+                value: Long.fromNumber(1000)
+            }, "1")).resolves.toBeUndefined()
+
+            expect(mockUserRepository.update).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    userDocument: expect.any(String),
+                    creditCardToken: expect.any(String),
+                    value: Long.fromNumber(1000)
+                }), 1)
+        })
+
     })
 })

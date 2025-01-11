@@ -52,11 +52,12 @@ export class UserService {
             throw new ValidationException('Invalid ID provided')
         }
 
-        const user = await this.userRepository.deleteUser(id)
+        const user = await this.exist(parseInt(id))
         if (!user) {
             throw new NotFoundException('User not found')
         }
-
+        
+        await this.userRepository.deleteUser(user)
         return 
     }
 
@@ -101,7 +102,7 @@ export class UserService {
         return CryptoProvider.create()
     }
 
-    private static get userRepository() {
+    static get userRepository() {
         return UserRepositoryProvider.create()
     }
 }

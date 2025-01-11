@@ -23,17 +23,8 @@ export class TypeOrmUserRepository implements UserRepository {
         return repository.find()
     }
 
-    async deleteUser(id: string): Promise<User | null> {
+    async deleteUser(user: User): Promise<User | null> {
         const repository: Repository<User> = await AppDataSource.getRepository(User)
-        const user = await repository.findOne({ 
-            where: { 
-                id: parseInt(id) 
-            } 
-        })
-        if (!user) {
-            return null
-        }
-
         return repository.remove(user)
     }
 

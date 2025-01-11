@@ -8,6 +8,8 @@ import { NotFoundException } from "../../domain/errors/not-found-error"
 import { ValidationException } from "../../domain/errors/validation-error";
 import { mockUserRepository } from "../mocks/user-repository.mock";
 import { mockCryptoUtil } from "../mocks/crypto-provider.mock";
+import { userListMock } from "../mocks/user-list.mock";
+import { User } from "../../domain/entity/User";
 
 jest.mock("../../application/factories/user.repository.factory", () => ({
     UserRepositoryProvider: {
@@ -33,6 +35,15 @@ describe("User Service", () => {
                 }
             }
         })
+
+        mockUserRepository.deleteUser.mockImplementation((user: User) => {
+            const index = userListMock.findIndex((u) => u.id === user.id)
+            if (index === -1) {
+                throw new NotFoundException("User not found")
+            }
+            userListMock.splice(index, 1)
+        });
+        
     })
     
     describe("Sign Up", () => {
@@ -76,4 +87,28 @@ describe("User Service", () => {
         })
     })
 
+    describe("Exclude", () => {
+
+        test("should throw ValidationException if ID is invalid", async () => {
+            await expect(UserService.deleteUser(" ")).rejects.toThrow(ValidationException)
+        })
+
+        test("should throw NotFoundException if user does not exist", async () => {
+            jest.spyOn(UserService, "exist").mockResolvedValue(null);
+            await expect(UserService.deleteUser("123")).rejects.toThrow(NotFoundException)
+        })
+
+        test("should delete user successfully", async () => {
+            const userFounded =
+                {
+                    id: 1,
+                    userDocument: "hashed-12345678910",
+                    creditCardToken: "hash-crediktoken",
+                    value: Long.fromNumber(1000)
+                }
+            jest.spyOn(UserService, "exist").mockResolvedValue(userFounded)
+            await expect(UserService.deleteUser("1")).resolves.toBeUndefined()
+            expect(mockUserRepository.deleteUser).toHaveBeenCalledWith(userFounded)
+        })
+    })
 })

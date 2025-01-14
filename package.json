@@ -8,7 +8,7 @@
     "dev": "nodemon --exec ts-node ./src/app.ts",
     "start:dev": "concurrently \"tsc -w\" \"nodemon build/index.js\"",
     "build": "tsc",
-    "start": "ts-node src/index.ts",
+    "start": "ts-node src/app.ts",
     "migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d ./src/data-source.ts ./src/migration/default",
     "migration:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts",
     "test": "jest --runInBand"

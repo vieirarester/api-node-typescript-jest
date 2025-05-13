@@ -1,4 +1,4 @@
-# API com TypeScript e Jest
+# API com TypeScript e Jest (Ao vivo na aula)
 
 ## Descrição
 
